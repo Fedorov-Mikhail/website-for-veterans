@@ -1,0 +1,487 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block content %}
+<div id="top">
+    <!-- Hero блок -->
+    {% if hero %}
+    <section class="hero" style="background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.62), rgba(0, 0, 0, 0.62)), url('{{ hero.background_image.url }}');">
+        <div class="hero-overlay"></div>
+        <div class="container hero-content">
+            <h1>{{ hero.title }}</h1>
+            <p>{{ hero.subtitle|default:"" }}</p>
+            <div class="hero-actions">
+                <a href="{{ hero.button1_link }}" class="btn btn-accent">{{ hero.button1_text }}</a>
+                <a href="{{ hero.button2_link }}" class="btn btn-light">{{ hero.button2_text }}</a>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Блок губернатора (если включён) -->
+    {% if governor and governor.is_enabled %}
+    <section class="surface-gray section-block">
+        <div class="container split-block">
+            <div class="quote-box">
+                {{ governor.quote|linebreaks }}
+                <strong>{{ governor.name }}</strong>
+                <span>{{ governor.position }}</span>
+            </div>
+            <div class="photo photo-lg" style="background-image: url('{{ governor.image.url }}');"></div>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Руководство (без карусели, просто сетка) -->
+    {% if team %}
+    <section class="surface-white section-block">
+        <div class="container">
+            <div class="section-title">
+                <span></span>
+                <h2>{{ site_content.team_title }}</h2>
+                {% if site_content.team_subtitle %}
+                    <p class="section-subtitle">{{ site_content.team_subtitle }}</p>
+                {% endif %}
+            </div>
+            <div class="leader-grid">
+                {% for member in team %}
+                <article class="leader-card">
+                    <div class="leader-photo" style="background-image: url('{{ member.photo.url }}');"></div>
+                    <h3>{{ member.name }}</h3>
+                    <p class="muted">{{ member.position }}</p>
+                    <p>{{ member.bio|truncatewords:20 }}</p>
+                </article>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- О нас (без карусели) -->
+    {% if about %}
+    <section class="surface-white section-block" id="intro">
+        <div class="container text-block">
+            <div class="section-title">
+                <span></span>
+                <h2>{{ about.title }}</h2>
+            </div>
+            {{ about.content|linebreaks }}
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Наши цели (без карусели) -->
+    {% if goals %}
+    <section class="surface-gray section-block">
+        <div class="container">
+            <div class="section-title">
+                <span></span>
+                <h2>{{ site_content.goals_title }}</h2>
+                {% if site_content.goals_subtitle %}
+                    <p class="section-subtitle">{{ site_content.goals_subtitle }}</p>
+                {% endif %}
+            </div>
+            <div class="goals-grid">
+                {% for goal in goals %}
+                <article class="goal-card">
+                    <div class="goal-photo" style="background-image: url('{{ goal.icon.url }}');"></div>
+                    <div class="goal-caption">{{ goal.title }}</div>
+                </article>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Наши проекты (карусель) -->
+    {% if projects %}
+    <section class="surface-gray section-block">
+        <div class="container">
+            <div class="section-title">
+                <span></span>
+                <h2>{{ site_content.projects_title }}</h2>
+                {% if site_content.projects_subtitle %}
+                    <p class="section-subtitle">{{ site_content.projects_subtitle }}</p>
+                {% endif %}
+            </div>
+            <p class="section-subtitle">Социальные, спортивные и культурные события, объединяющие ветеранов Московской области</p>
+            <div class="projects-box">
+                <div class="carousel" data-slides-per-view="2" data-carousel="projects">
+                    <div class="slider-controls">
+                        <button class="round-btn" data-carousel-prev disabled>
+                            <span class="round-btn-icon-left"></span>
+                        </button>
+                        <button class="round-btn" data-carousel-next>
+                            <span class="round-btn-icon-right"></span>
+                        </button>
+                    </div>
+                    <div class="carousel-viewport">
+                        <div class="carousel-track">
+                            {% for project in projects %}
+                            <div class="carousel-slide">
+                                <article class="project-card">
+                                    <div class="project-photo" style="background-image: url('{{ project.image.url }}');"></div>
+                                    <h3>{{ project.title }}</h3>
+                                    <p>{{ project.subtitle|default:"" }}</p>
+                                </article>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Анонс мероприятий (карусель) -->
+    {% if events %}
+    <section class="surface-white section-block" id="documents">
+        <div class="container">
+            <div class="section-title">
+                <span></span>
+                <h2>{{ site_content.events_title }}</h2>
+                {% if site_content.events_subtitle %}
+                    <p class="section-subtitle">{{ site_content.events_subtitle }}</p>
+                {% endif %}
+            </div>
+            <div class="carousel" data-slides-per-view="2" data-carousel="events">
+                <div class="slider-controls">
+                    <button class="round-btn" data-carousel-prev disabled>
+                        <span class="round-btn-icon-left"></span>
+                    </button>
+                    <button class="round-btn" data-carousel-next>
+                        <span class="round-btn-icon-right"></span>
+                    </button>
+                </div>
+                <div class="carousel-viewport">
+                    <div class="carousel-track">
+                        {% for event in events %}
+                        <div class="carousel-slide">
+                            <article class="poster-card">
+                                <div class="poster" style="background-image: url('{{ event.image.url }}');"></div>
+                                <h3>{{ event.title }}</h3>
+                                <p>{{ event.date|date:"d.m.Y" }} • {{ event.description|truncatewords:15 }}</p>
+                            </article>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Видеогалерея (карусель) -->
+    {% if videos %}
+    <section class="surface-gray section-block">
+        <div class="container">
+            <div class="section-title">
+                <span></span>
+                <h2>{{ site_content.videos_title }}</h2>
+                {% if site_content.videos_subtitle %}
+                    <p class="section-subtitle">{{ site_content.videos_subtitle }}</p>
+                {% endif %}
+            </div>
+            <div class="carousel" data-slides-per-view="2" data-carousel="videos">
+                <div class="slider-controls">
+                    <button class="round-btn" data-carousel-prev disabled>
+                        <span class="round-btn-icon-left"></span>
+                    </button>
+                    <button class="round-btn" data-carousel-next>
+                        <span class="round-btn-icon-right"></span>
+                    </button>
+                </div>
+                <div class="carousel-viewport">
+                    <div class="carousel-track">
+                        {% for video in videos %}
+                        <div class="carousel-slide">
+                            <article class="video-card">
+                                <div class="video-wrapper">
+                                    {% if video.video_url %}
+                                        <iframe 
+                                            src="{{ video.embed_url }}" 
+                                            loading="lazy"
+                                            frameborder="0" 
+                                            allowfullscreen 
+                                            allow="autoplay; encrypted-media"
+                                            title="{{ video.title }}"
+                                        ></iframe>
+                                    {% else %}
+                                        <div class="video-placeholder">Видео недоступно</div>
+                                    {% endif %}
+                                </div>
+                                <h3>{{ video.title }}</h3>
+                                <p>{{ video.subtitle|default:"" }}</p>
+                            </article>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="video-action">
+                <a href="{% url 'main:video_list' %}" class="btn btn-accent">{{ site_content.videos_all_button_text|default:"Посмотреть все видео" }}</a>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Новости (карусель) -->
+    {% if news %}
+    <section class="surface-white section-block" id="news">
+        <div class="container">
+            <div class="section-title">
+                <span></span>
+                <h2>{{ site_content.news_title }}</h2>
+                {% if site_content.news_subtitle %}
+                    <p class="section-subtitle">{{ site_content.news_subtitle }}</p>
+                {% endif %}
+            </div>
+            <div class="carousel" data-slides-per-view="3" data-carousel="news">
+                <div class="slider-controls">
+                    <button class="round-btn" data-carousel-prev disabled>
+                        <span class="round-btn-icon-left"></span>
+                    </button>
+                    <button class="round-btn" data-carousel-next>
+                        <span class="round-btn-icon-right"></span>
+                    </button>
+                </div>
+                <div class="carousel-viewport">
+                    <div class="carousel-track">
+                        {% for item in news %}
+                        <div class="carousel-slide">
+                            <article class="news-card">
+                                <div class="news-photo" style="background-image: url('{{ item.image.url }}');"></div>
+                                <h3>{{ item.title }}</h3>
+                                <p>{{ item.subtitle|default:"" }}</p>
+                                <a href="{% url 'main:news_detail' slug=item.slug %}" class="btn-link">Читать подробнее →</a>
+                            </article>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- FAQ (без карусели) -->
+    <section class="surface-gray section-block faq-section">
+        <div class="container">
+            <div class="section-title">
+                <span></span>
+                <h2>{{ site_content.faq_title }}</h2>
+                {% if site_content.faq_subtitle %}
+                    <p class="section-subtitle">{{ site_content.faq_subtitle }}</p>
+                {% endif %}
+            </div>
+            <div class="faq-list">
+                {% for faq in faqs %}
+                <div class="faq-item">
+                    <div class="faq-question">
+                        {{ faq.question }}
+                        <button class="faq-toggle" aria-label="Раскрыть ответ">+</button>
+                    </div>
+                    <div class="faq-answer">
+                        {{ faq.answer|linebreaks }}
+                    </div>
+                </div>
+                {% empty %}
+                <p>Вопросов пока нет.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <!-- Контакты + карта (без карусели) -->
+    {% if contacts %}
+    <section class="surface-white section-block" id="max-community">
+        <div class="container contacts-layout">
+            <div>
+                <div class="section-title">
+                    <span></span>
+                    <h2>{{ site_content.contacts_title }}</h2>
+                    {% if site_content.contacts_subtitle %}
+                        <p class="section-subtitle">{{ site_content.contacts_subtitle }}</p>
+                    {% endif %}
+                </div>
+                <p>{{ contacts.address }}</p>
+                <p>E-mail: {{ contacts.email }}</p>
+                {% for phone in contacts.phones.all %}
+                    <p>Телефон: {{ phone.number }}</p>
+                {% endfor %}
+                <div class="social-row">
+                    <span>Telegram</span>
+                    <span>VK</span>
+                    <span>OK</span>
+                </div>
+                <div class="qr-box">
+                    <p>Сообщество в Max</p>
+                    <div class="qr-placeholder">QR</div>
+                </div>
+            </div>
+            <div id="map" class="map-box" data-coords="{{ contacts.map_coordinates }}" data-zoom="{{ contacts.map_zoom }}"></div>
+        </div>
+    </section>
+    {% endif %}
+
+    <!-- Форма сообщения об ошибке (упрощённо) -->
+    <section class="surface-white section-block">
+        <div class="container feedback-area">
+            <div class="section-title">
+                <span></span>
+                <h2>Сообщить о некорректности данных</h2>
+            </div>
+            <p class="section-subtitle">Если заметили ошибку на сайте, отправьте сообщение администратору.</p>
+            <div class="report-box">
+                <button type="button" class="btn btn-secondary" id="toggleReportForm">Сообщить о неточности</button>
+                <form class="report-form" style="display: none;" id="reportForm">
+                    <label>Тип проблемы
+                        <select>
+                            <option>Фактическая ошибка</option>
+                            <option>Опечатка</option>
+                            <option>Битая ссылка</option>
+                        </select>
+                    </label>
+                    <label>Что именно некорректно? *
+                        <textarea required minlength="20"></textarea>
+                    </label>
+                    <label>Контакт для уточнений (необязательно)
+                        <input type="text">
+                    </label>
+                    <label class="checkbox">
+                        <input type="checkbox"> Согласен на обработку персональных данных
+                    </label>
+                    <button type="submit" class="btn btn-primary">Отправить</button>
+                </form>
+            </div>
+        </div>
+    </section>
+</div>
+
+<!-- Скрипт каруселей -->
+<script>
+(function() {
+    // Инициализация всех каруселей
+    const carousels = document.querySelectorAll('.carousel');
+    
+    carousels.forEach(container => {
+        const slidesPerViewDesktop = parseInt(container.dataset.slidesPerView) || 2;
+        let slidesPerView = slidesPerViewDesktop;
+        const track = container.querySelector('.carousel-track');
+        const slides = Array.from(container.querySelectorAll('.carousel-slide'));
+        const prevBtn = container.querySelector('[data-carousel-prev]');
+        const nextBtn = container.querySelector('[data-carousel-next]');
+        
+        let currentIndex = 0;
+        let animating = false;
+        let enableTransition = true;
+        let slideCount = slides.length;
+        let loop = slideCount > 1;
+        
+        // Определяем количество видимых слайдов по ширине
+        function updateSlidesPerView() {
+            const isMobile = window.matchMedia('(max-width: 1200px)').matches;
+            slidesPerView = isMobile ? 1 : slidesPerViewDesktop;
+            // Обновляем CSS переменные
+            container.style.setProperty('--slides-per-view', slidesPerView);
+            track.style.setProperty('--per-view', slidesPerView);
+            // Пересчитываем индекс, чтобы не выйти за границы
+            const maxIndex = Math.max(0, slideCount - slidesPerView);
+            if (currentIndex > maxIndex) currentIndex = maxIndex;
+            updatePosition(false);
+            updateButtons();
+        }
+        
+        function updatePosition(useTransition = true) {
+            if (!track) return;
+            if (!useTransition) {
+                track.classList.add('no-transition');
+            }
+            track.style.setProperty('--index', currentIndex);
+            track.style.transform = `translateX(calc(-1 * ${currentIndex} * (100% / ${slidesPerView})))`;
+            if (!useTransition) {
+                // форсируем reflow
+                void track.offsetHeight;
+                track.classList.remove('no-transition');
+            }
+        }
+        
+        function updateButtons() {
+            if (!loop) {
+                if (prevBtn) prevBtn.disabled = currentIndex === 0;
+                if (nextBtn) nextBtn.disabled = currentIndex >= slideCount - slidesPerView;
+            } else {
+                if (prevBtn) prevBtn.disabled = false;
+                if (nextBtn) nextBtn.disabled = false;
+            }
+        }
+        
+        function shift(direction) {
+            if (animating) return;
+            if (!loop && ( (direction === -1 && currentIndex === 0) || (direction === 1 && currentIndex >= slideCount - slidesPerView) )) return;
+            
+            animating = true;
+            let newIndex = currentIndex + direction;
+            
+            // Зацикливание (бесконечная карусель)
+            if (loop) {
+                if (newIndex < 0) {
+                    newIndex = slideCount - slidesPerView;
+                } else if (newIndex >= slideCount) {
+                    newIndex = 0;
+                }
+            }
+            
+            currentIndex = newIndex;
+            updatePosition(true);
+            updateButtons();
+            
+            // После завершения анимации снимаем флаг
+            const onTransitionEnd = () => {
+                track.removeEventListener('transitionend', onTransitionEnd);
+                animating = false;
+                // Дополнительная проверка для бесконечной прокрутки (если нужно подправить позицию без анимации)
+                if (loop && (currentIndex === 0 || currentIndex === slideCount - slidesPerView)) {
+                    // Можно реализовать бесконечный цикл с подменой, но для простоты оставим так
+                }
+            };
+            track.addEventListener('transitionend', onTransitionEnd);
+        }
+        
+        prevBtn?.addEventListener('click', () => shift(-1));
+        nextBtn?.addEventListener('click', () => shift(1));
+        
+        // Адаптив
+        const mediaQuery = window.matchMedia('(max-width: 1200px)');
+        const handleResize = () => {
+            updateSlidesPerView();
+        };
+        mediaQuery.addEventListener('change', handleResize);
+        window.addEventListener('resize', handleResize);
+        
+        // Старт
+        updateSlidesPerView();
+    });
+    
+    // Toggle формы (как было)
+    const toggleBtn = document.getElementById('toggleReportForm');
+    const form = document.getElementById('reportForm');
+    if (toggleBtn && form) {
+        toggleBtn.addEventListener('click', () => {
+            form.style.display = form.style.display === 'none' ? 'grid' : 'none';
+        });
+    }
+    
+    // Яндекс карта
+    const mapDiv = document.getElementById('map');
+    if (mapDiv && mapDiv.dataset.coords && typeof ymaps !== 'undefined') {
+        const coords = mapDiv.dataset.coords.split(',').map(Number);
+        ymaps.ready(() => {
+            const map = new ymaps.Map('map', { center: coords, zoom: parseInt(mapDiv.dataset.zoom) || 12 });
+            map.geoObjects.add(new ymaps.Placemark(coords));
+        });
+    }
+})();
+</script>
+{% endblock %}

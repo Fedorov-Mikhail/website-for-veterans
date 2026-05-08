@@ -1,0 +1,30 @@
+{% extends 'main/base.html' %}
+{% load static %}
+
+{% block title %}{{ site_content.videos_title|default:"Все видео" }} | Ассоциация ветеранов СВО{% endblock %}
+
+{% block content %}
+<section class="surface-white section-block">
+    <div class="container">
+        {% if videos %}
+            <div class="video-list-grid">
+                {% for video in videos %}
+                    <article class="video-card video-card-grid">
+                        <div class="video-wrapper">
+                            <iframe src="{{ video.embed_url }}" loading="lazy" frameborder="0" allowfullscreen title="{{ video.title }}"></iframe>
+                        </div>
+                        <h3>{{ video.title }}</h3>
+                        <p>{{ video.subtitle|default:"" }}</p>
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>Видео пока не добавлены.</p>
+        {% endif %}
+
+        <div class="video-action">
+            <a href="{% url 'main:home' %}#news" class="btn btn-light">← На главную</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Ассоциация ветеранов СВО | Подмосковье{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'main/css/style.css' %}">
+    <!-- Яндекс.Карты (если нужны) -->
+    <script src="https://api-maps.yandex.ru/2.1/?apikey=ваш_ключ&lang=ru_RU"></script>
+</head>
+<body>
+    <header class="site-header">
+        <div class="container header-inner">
+            <a href="#top" class="brand">
+                <span class="brand-mark" aria-hidden="true"></span>
+                <span>Ассоциация ветеранов СВО Московской области</span>
+            </a>
+            <nav aria-label="Основная навигация">
+                <ul class="nav-list">
+                    <li><a href="#intro" class="nav-item-link">О нас</a></li>
+                    <li><a href="#news" class="nav-item-link">Новости</a></li>
+                    <li><a href="#documents" class="nav-item-link">Документы</a></li>
+                </ul>
+            </nav>
+            <a class="max-link" href="#max-community">Сообщество в MAX</a>
+        </div>
+    </header>
+
+    <main class="page-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer">
+        <div class="container footer-inner">
+            {% if contacts %}
+                <p>{{ contacts.organization|default:"Ассоциация ветеранов СВО" }}</p>
+                {% for phone in contacts.phones.all %}
+                    <p>{{ phone.number }}</p>
+                {% endfor %}
+                <p>{{ contacts.email }}</p>
+                <p>{{ contacts.address }}</p>
+            {% else %}
+                <p>Контакты не заполнены</p>
+            {% endif %}
+            <p><a href="/privacy">Политика конфиденциальности</a></p>
+        </div>
+    </footer>
+
+    <!-- Базовый JS для FAQ -->
+    <script>
+        document.querySelectorAll('.faq-item').forEach(item => {
+            const questionDiv = item.querySelector('.faq-question');
+            const toggleBtn = item.querySelector('.faq-toggle');
+            
+            const toggle = () => {
+                item.classList.toggle('open');
+                const isOpen = item.classList.contains('open');
+                toggleBtn.textContent = isOpen ? '−' : '+';
+                toggleBtn.setAttribute('aria-label', isOpen ? 'Скрыть ответ' : 'Раскрыть ответ');
+            };
+            
+            questionDiv.addEventListener('click', toggle);
+        }); 
+    </script>
+</body>
+</html>

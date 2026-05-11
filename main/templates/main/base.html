@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Ассоциация ветеранов СВО | Подмосковье{% endblock %}</title>
+    <title>{% block title %}Ассоциация ветеранов СВО | Самарская область{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'main/css/style.css' %}">
     <!-- Яндекс.Карты -->
     <script src="https://api-maps.yandex.ru/2.1/?apikey=ваш_ключ&lang=ru_RU"></script>
@@ -13,7 +13,7 @@
     <header class="site-header">
         <div class="container header-inner">
             <a href="#top" class="brand">
-                <span class="brand-mark" aria-hidden="true"><img src="main\static\main\imgs\logo-1.jpg" alt=""></span>
+                <img src="{% static 'main/images/logo-1.png' %}" alt="Логотип" class="brand-logo">
                 <span>Ассоциация ветеранов СВО Самарской области</span>
             </a>
             <nav aria-label="Основная навигация">

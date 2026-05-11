@@ -785,3 +785,38 @@ body :where(h1, h2, h3, h4, h5, h6) {
         gap: 1.5rem;
     }
 }
+
+/* Обёртка изображения новости для позиционирования бейджа */
+.news-image-wrapper {
+    position: relative;
+    overflow: hidden;
+    border-radius: 10px 10px 0 0; /* чтобы бейдж не вылезал за скруглённые углы */
+}
+
+/* Бейдж с датой */
+.news-date-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: rgba(0, 0, 0, 0.65);
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    backdrop-filter: blur(2px);
+    z-index: 2;
+    font-family: inherit;
+    letter-spacing: 0.3px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+/* Адаптив для мобильных */
+@media (max-width: 768px) {
+    .news-date-badge {
+        top: 8px;
+        left: 8px;
+        padding: 4px 10px;
+        font-size: 12px;
+    }
+}

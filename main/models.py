@@ -245,17 +245,18 @@ class Video(models.Model):
 
 
 class News(BaseContent):
-    """Новость"""
+    """Новость (с отдельной страницей)"""
     subtitle = models.CharField('Подзаголовок', max_length=300, blank=True)
     date = models.DateTimeField('Дата публикации', default=timezone.now)
     content = models.TextField('Полный текст')
     slug = models.SlugField('URL', unique=True, blank=True)
-    
+    # image уже есть в BaseContent (используется как превью на главной)
+
     class Meta:
         verbose_name = 'Новость'
         verbose_name_plural = 'Новости'
         ordering = ['-date']
-    
+
     def __str__(self):
         return self.title
     
@@ -312,3 +313,18 @@ class SiteContent(models.Model):
             raise Exception('Можно создать только одну запись SiteContent')
         super().save(*args, **kwargs)
     
+
+class NewsImage(models.Model):
+    """Изображение для галереи новости"""
+    news = models.ForeignKey(News, on_delete=models.CASCADE, related_name='images', verbose_name='Новость')
+    image = models.ImageField('Изображение', upload_to='news/gallery/')
+    title = models.CharField('Подпись', max_length=200, blank=True)
+    order = models.PositiveIntegerField('Порядок', default=0)
+
+    class Meta:
+        verbose_name = 'Изображение новости'
+        verbose_name_plural = 'Изображения новости'
+        ordering = ['order']
+
+    def __str__(self):
+        return f'Изображение для {self.news.title} - {self.order}'

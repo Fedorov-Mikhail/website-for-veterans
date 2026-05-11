@@ -251,10 +251,14 @@
                         {% for item in news %}
                         <div class="carousel-slide">
                             <article class="news-card">
-                                <div class="news-photo" style="background-image: url('{{ item.image.url }}');"></div>
+                                <div class="news-image-wrapper">
+                                    <div class="news-photo" style="background-image: url('{{ item.image.url }}');"></div>
+                                    <div class="news-date-badge">{{ item.date|date:"d.m.Y" }}</div>
+                                </div>
+                                <a href="{% url 'main:news_detail' slug=item.slug %}" class="btn-link">
                                 <h3>{{ item.title }}</h3>
                                 <p>{{ item.subtitle|default:"" }}</p>
-                                <a href="{% url 'main:news_detail' slug=item.slug %}" class="btn-link">Читать подробнее →</a>
+                                </a>
                             </article>
                         </div>
                         {% endfor %}
@@ -311,9 +315,7 @@
                     <p>Телефон: {{ phone.number }}</p>
                 {% endfor %}
                 <div class="social-row">
-                    <span>Telegram</span>
-                    <span>VK</span>
-                    <span>OK</span>
+                    <a href="https://vk.com/club238127083" target="_blank"><span>VK</span></a>
                 </div>
                 <div class="qr-box">
                     <p>Сообщество в Max</p>
@@ -325,7 +327,7 @@
     </section>
     {% endif %}
 
-    <!-- Форма сообщения об ошибке (упрощённо) -->
+    <!-- Форма сообщения об ошибке -->
     <section class="surface-white section-block">
         <div class="container feedback-area">
             <div class="section-title">
@@ -340,7 +342,7 @@
                         <select>
                             <option>Фактическая ошибка</option>
                             <option>Опечатка</option>
-                            <option>Битая ссылка</option>
+                            <option>Другое</option>
                         </select>
                     </label>
                     <label>Что именно некорректно? *
@@ -359,129 +361,128 @@
     </section>
 </div>
 
-<!-- Скрипт каруселей -->
 <script>
-(function() {
-    // Инициализация всех каруселей
-    const carousels = document.querySelectorAll('.carousel');
-    
-    carousels.forEach(container => {
-        const slidesPerViewDesktop = parseInt(container.dataset.slidesPerView) || 2;
-        let slidesPerView = slidesPerViewDesktop;
-        const track = container.querySelector('.carousel-track');
-        const slides = Array.from(container.querySelectorAll('.carousel-slide'));
-        const prevBtn = container.querySelector('[data-carousel-prev]');
-        const nextBtn = container.querySelector('[data-carousel-next]');
+    (function() {
+        // Инициализация всех каруселей
+        const carousels = document.querySelectorAll('.carousel');
         
-        let currentIndex = 0;
-        let animating = false;
-        let enableTransition = true;
-        let slideCount = slides.length;
-        let loop = slideCount > 1;
-        
-        // Определяем количество видимых слайдов по ширине
-        function updateSlidesPerView() {
-            const isMobile = window.matchMedia('(max-width: 1200px)').matches;
-            slidesPerView = isMobile ? 1 : slidesPerViewDesktop;
-            // Обновляем CSS переменные
-            container.style.setProperty('--slides-per-view', slidesPerView);
-            track.style.setProperty('--per-view', slidesPerView);
-            // Пересчитываем индекс, чтобы не выйти за границы
-            const maxIndex = Math.max(0, slideCount - slidesPerView);
-            if (currentIndex > maxIndex) currentIndex = maxIndex;
-            updatePosition(false);
-            updateButtons();
-        }
-        
-        function updatePosition(useTransition = true) {
-            if (!track) return;
-            if (!useTransition) {
-                track.classList.add('no-transition');
-            }
-            track.style.setProperty('--index', currentIndex);
-            track.style.transform = `translateX(calc(-1 * ${currentIndex} * (100% / ${slidesPerView})))`;
-            if (!useTransition) {
-                // форсируем reflow
-                void track.offsetHeight;
-                track.classList.remove('no-transition');
-            }
-        }
-        
-        function updateButtons() {
-            if (!loop) {
-                if (prevBtn) prevBtn.disabled = currentIndex === 0;
-                if (nextBtn) nextBtn.disabled = currentIndex >= slideCount - slidesPerView;
-            } else {
-                if (prevBtn) prevBtn.disabled = false;
-                if (nextBtn) nextBtn.disabled = false;
-            }
-        }
-        
-        function shift(direction) {
-            if (animating) return;
-            if (!loop && ( (direction === -1 && currentIndex === 0) || (direction === 1 && currentIndex >= slideCount - slidesPerView) )) return;
+        carousels.forEach(container => {
+            const slidesPerViewDesktop = parseInt(container.dataset.slidesPerView) || 2;
+            let slidesPerView = slidesPerViewDesktop;
+            const track = container.querySelector('.carousel-track');
+            const slides = Array.from(container.querySelectorAll('.carousel-slide'));
+            const prevBtn = container.querySelector('[data-carousel-prev]');
+            const nextBtn = container.querySelector('[data-carousel-next]');
             
-            animating = true;
-            let newIndex = currentIndex + direction;
+            let currentIndex = 0;
+            let animating = false;
+            let enableTransition = true;
+            let slideCount = slides.length;
+            let loop = slideCount > 1;
             
-            // Зацикливание (бесконечная карусель)
-            if (loop) {
-                if (newIndex < 0) {
-                    newIndex = slideCount - slidesPerView;
-                } else if (newIndex >= slideCount) {
-                    newIndex = 0;
+            // Определяем количество видимых слайдов по ширине
+            function updateSlidesPerView() {
+                const isMobile = window.matchMedia('(max-width: 1200px)').matches;
+                slidesPerView = isMobile ? 1 : slidesPerViewDesktop;
+                // Обновляем CSS переменные
+                container.style.setProperty('--slides-per-view', slidesPerView);
+                track.style.setProperty('--per-view', slidesPerView);
+                // Пересчитываем индекс, чтобы не выйти за границы
+                const maxIndex = Math.max(0, slideCount - slidesPerView);
+                if (currentIndex > maxIndex) currentIndex = maxIndex;
+                updatePosition(false);
+                updateButtons();
+            }
+            
+            function updatePosition(useTransition = true) {
+                if (!track) return;
+                if (!useTransition) {
+                    track.classList.add('no-transition');
+                }
+                track.style.setProperty('--index', currentIndex);
+                track.style.transform = `translateX(calc(-1 * ${currentIndex} * (100% / ${slidesPerView})))`;
+                if (!useTransition) {
+                    // форсируем reflow
+                    void track.offsetHeight;
+                    track.classList.remove('no-transition');
                 }
             }
             
-            currentIndex = newIndex;
-            updatePosition(true);
-            updateButtons();
-            
-            // После завершения анимации снимаем флаг
-            const onTransitionEnd = () => {
-                track.removeEventListener('transitionend', onTransitionEnd);
-                animating = false;
-                // Дополнительная проверка для бесконечной прокрутки (если нужно подправить позицию без анимации)
-                if (loop && (currentIndex === 0 || currentIndex === slideCount - slidesPerView)) {
-                    // Можно реализовать бесконечный цикл с подменой, но для простоты оставим так
+            function updateButtons() {
+                if (!loop) {
+                    if (prevBtn) prevBtn.disabled = currentIndex === 0;
+                    if (nextBtn) nextBtn.disabled = currentIndex >= slideCount - slidesPerView;
+                } else {
+                    if (prevBtn) prevBtn.disabled = false;
+                    if (nextBtn) nextBtn.disabled = false;
                 }
+            }
+            
+            function shift(direction) {
+                if (animating) return;
+                if (!loop && ( (direction === -1 && currentIndex === 0) || (direction === 1 && currentIndex >= slideCount - slidesPerView) )) return;
+                
+                animating = true;
+                let newIndex = currentIndex + direction;
+                
+                // Зацикливание (бесконечная карусель)
+                if (loop) {
+                    if (newIndex < 0) {
+                        newIndex = slideCount - slidesPerView;
+                    } else if (newIndex >= slideCount) {
+                        newIndex = 0;
+                    }
+                }
+                
+                currentIndex = newIndex;
+                updatePosition(true);
+                updateButtons();
+                
+                // После завершения анимации снимаем флаг
+                const onTransitionEnd = () => {
+                    track.removeEventListener('transitionend', onTransitionEnd);
+                    animating = false;
+                    // Дополнительная проверка для бесконечной прокрутки (если нужно подправить позицию без анимации)
+                    if (loop && (currentIndex === 0 || currentIndex === slideCount - slidesPerView)) {
+                        // Можно реализовать бесконечный цикл с подменой, но для простоты оставим так
+                    }
+                };
+                track.addEventListener('transitionend', onTransitionEnd);
+            }
+            
+            prevBtn?.addEventListener('click', () => shift(-1));
+            nextBtn?.addEventListener('click', () => shift(1));
+            
+            // Адаптив
+            const mediaQuery = window.matchMedia('(max-width: 1200px)');
+            const handleResize = () => {
+                updateSlidesPerView();
             };
-            track.addEventListener('transitionend', onTransitionEnd);
+            mediaQuery.addEventListener('change', handleResize);
+            window.addEventListener('resize', handleResize);
+            
+            // Старт
+            updateSlidesPerView();
+        });
+        
+        // Toggle формы (как было)
+        const toggleBtn = document.getElementById('toggleReportForm');
+        const form = document.getElementById('reportForm');
+        if (toggleBtn && form) {
+            toggleBtn.addEventListener('click', () => {
+                form.style.display = form.style.display === 'none' ? 'grid' : 'none';
+            });
         }
         
-        prevBtn?.addEventListener('click', () => shift(-1));
-        nextBtn?.addEventListener('click', () => shift(1));
-        
-        // Адаптив
-        const mediaQuery = window.matchMedia('(max-width: 1200px)');
-        const handleResize = () => {
-            updateSlidesPerView();
-        };
-        mediaQuery.addEventListener('change', handleResize);
-        window.addEventListener('resize', handleResize);
-        
-        // Старт
-        updateSlidesPerView();
-    });
-    
-    // Toggle формы (как было)
-    const toggleBtn = document.getElementById('toggleReportForm');
-    const form = document.getElementById('reportForm');
-    if (toggleBtn && form) {
-        toggleBtn.addEventListener('click', () => {
-            form.style.display = form.style.display === 'none' ? 'grid' : 'none';
-        });
-    }
-    
-    // Яндекс карта
-    const mapDiv = document.getElementById('map');
-    if (mapDiv && mapDiv.dataset.coords && typeof ymaps !== 'undefined') {
-        const coords = mapDiv.dataset.coords.split(',').map(Number);
-        ymaps.ready(() => {
-            const map = new ymaps.Map('map', { center: coords, zoom: parseInt(mapDiv.dataset.zoom) || 12 });
-            map.geoObjects.add(new ymaps.Placemark(coords));
-        });
-    }
-})();
+        // Яндекс карта
+        const mapDiv = document.getElementById('map');
+        if (mapDiv && mapDiv.dataset.coords && typeof ymaps !== 'undefined') {
+            const coords = mapDiv.dataset.coords.split(',').map(Number);
+            ymaps.ready(() => {
+                const map = new ymaps.Map('map', { center: coords, zoom: parseInt(mapDiv.dataset.zoom) || 12 });
+                map.geoObjects.add(new ymaps.Placemark(coords));
+            });
+        }
+    })();
 </script>
 {% endblock %}

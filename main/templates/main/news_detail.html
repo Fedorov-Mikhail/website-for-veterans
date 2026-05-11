@@ -1,25 +1,303 @@
-{% extends 'main/base.html' %}
 {% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ news.title }} | Новости</title>
+    <!-- Общие стили проекта (для кнопок, шрифтов, галереи) -->
+    <link rel="stylesheet" href="{% static 'main/css/style.css' %}">
+    <style>
+        /* Переопределяем фон body для этой страницы */
+        body {
+            margin: 0;
+            padding: 0;
+            background: white;
+            font-family: 'Golos Text', sans-serif;
+        }
+        /* Свой хедер — sticky, белый, тонкая линия, уменьшенная высота */
+        .news-header-sticky {
+            position: sticky;
+            top: 0;
+            background: white;
+            border-bottom: 1px solid #eaeaea;
+            z-index: 100;
+            padding: 12px 0;
+        }
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+        }
+        .back-button-simple {
+            font-size: 28px;
+            line-height: 1;
+            text-decoration: none;
+            color: #333;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            transition: opacity 0.2s;
+        }
+        .back-button-simple:hover {
+            opacity: 0.6;
+        }
+        .news-header-title {
+            margin: 0;
+            font-size: 20px;
+            font-weight: 500;
+            color: #121821;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+        }
+        .header-placeholder {
+            width: 40px;
+            visibility: hidden;
+        }
+        /* Основной контент — белый фон */
+        .news-detail-content {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        /* Заголовок и дата */
+        .news-title {
+            font-size: 32px;
+            margin-top: 0;
+            margin-bottom: 16px;
+        }
+        .news-publish-date {
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+        /* Галерея (унаследована из style.css, но продублируем для надёжности) */
+        .news-gallery {
+            margin: 30px 0;
+        }
+        .gallery-slider {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .gallery-viewport {
+            flex: 1;
+            overflow: hidden;
+            border-radius: 12px;
+            background: #f5f5f5;
+        }
+        .gallery-track {
+            display: flex;
+            transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            will-change: transform;
+        }
+        .gallery-slide {
+            flex: 0 0 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .gallery-slide img {
+            width: 100%;
+            max-height: 500px;
+            object-fit: contain;
+            display: block;
+        }
+        .gallery-nav {
+            background: rgba(0,0,0,0.5);
+            border: none;
+            color: white;
+            font-size: 32px;
+            font-weight: bold;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 5px;
+            flex-shrink: 0;
+        }
+        .gallery-nav:hover {
+            background: rgba(0,0,0,0.8);
+        }
+        .gallery-thumbs {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 15px;
+        }
+        .gallery-thumb {
+            width: 80px;
+            height: 80px;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: opacity 0.2s, transform 0.2s;
+            border: 2px solid transparent;
+        }
+        .gallery-thumb:hover {
+            opacity: 0.8;
+            transform: scale(1.05);
+        }
+        .gallery-thumb.active {
+            opacity: 1;
+            border-color: #f47a1a;
+        }
+        .gallery-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .news-subtitle {
+            font-size: 22px;
+            color: #444;
+            margin: 25px 0 15px;
+        }
+        .news-content {
+            font-size: 18px;
+            line-height: 1.7;
+            color: #222;
+        }
+        @media (max-width: 768px) {
+            .news-header-title {
+                font-size: 18px;
+                white-space: normal;
+                text-align: center;
+                width: 60%;
+            }
+            .back-button-simple {
+                font-size: 24px;
+                width: 36px;
+                height: 36px;
+            }
+            .news-title {
+                font-size: 26px;
+            }
+            .gallery-nav {
+                width: 36px;
+                height: 36px;
+                font-size: 24px;
+            }
+            .gallery-thumb {
+                width: 60px;
+                height: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
 
-{% block title %}{{ news.title }} | Новости{% endblock %}
-
-{% block content %}
-<section class="surface-white section-block">
-    <div class="container">
-        <article class="news-article" style="max-width: 800px; margin: 0 auto;">
-            <h1>{{ news.title }}</h1>
-            <p class="meta" style="color: #999; margin-bottom: 20px;">{{ news.date|date:"d.m.Y H:i" }}</p>
-            {% if news.image %}
-                <img src="{{ news.image.url }}" alt="{{ news.title }}" style="width: 100%; border-radius: 10px; margin: 20px 0;">
-            {% endif %}
-            {% if news.subtitle %}
-                <h2 style="font-size: 24px; color: #666; margin-bottom: 20px;">{{ news.subtitle }}</h2>
-            {% endif %}
-            <div class="news-content" style="font-size: 18px; line-height: 1.8;">
-                {{ news.content|linebreaks }}
-            </div>
-            <p><a href="{% url 'main:home' %}#news" class="btn btn-light" style="margin-top: 30px; display: inline-block;">← Назад к новостям</a></p>
-        </article>
+<header class="news-header-sticky">
+    <div class="header-container">
+        <a href="{% url 'main:home' %}#news" class="back-button-simple" aria-label="На главную">❮</a>
+        <div class="news-header-title">Новости</div>
+        <div class="header-placeholder"></div>
     </div>
-</section>
-{% endblock %}
+</header>
+
+<main class="news-detail-content">
+    <article>
+        <h1 class="news-title">{{ news.title }}</h1>
+        <p class="news-publish-date">{{ news.date|date:"d.m.Y" }}</p>
+
+        <!-- Галерея -->
+        {% if news.images.all %}
+        <div class="news-gallery">
+            <div class="gallery-slider">
+                <button class="gallery-nav gallery-prev" aria-label="Предыдущее">❮</button>
+                <div class="gallery-viewport">
+                    <div class="gallery-track" id="galleryTrack">
+                        {% for img in news.images.all %}
+                        <div class="gallery-slide">
+                            <img src="{{ img.image.url }}" alt="{{ img.title|default:news.title }}">
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <button class="gallery-nav gallery-next" aria-label="Следующее">❯</button>
+            </div>
+            <div class="gallery-thumbs">
+                {% for img in news.images.all %}
+                <div class="gallery-thumb {% if forloop.first %}active{% endif %}" data-index="{{ forloop.counter0 }}">
+                    <img src="{{ img.image.url }}" alt="{{ img.title|default:news.title }}">
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% elif news.image %}
+        <img src="{{ news.image.url }}" alt="{{ news.title }}" class="news-single-image" style="width:100%; border-radius:12px; margin:20px 0;">
+        {% endif %}
+
+        {% if news.subtitle %}
+        <h2 class="news-subtitle">{{ news.subtitle }}</h2>
+        {% endif %}
+
+        <div class="news-content">
+            {{ news.content|linebreaks }}
+        </div>
+    </article>
+</main>
+
+<script>
+    (function() {
+        const gallery = document.querySelector('.news-gallery');
+        if (!gallery) return;
+        const track = document.getElementById('galleryTrack');
+        if (!track) return;
+        const slides = Array.from(gallery.querySelectorAll('.gallery-slide'));
+        const thumbs = Array.from(gallery.querySelectorAll('.gallery-thumb'));
+        const prevBtn = gallery.querySelector('.gallery-prev');
+        const nextBtn = gallery.querySelector('.gallery-next');
+        if (slides.length === 0) return;
+
+        let currentIndex = 0;
+        let isAnimating = false;
+
+        function updateSlider() {
+            if (isAnimating) return;
+            const newTransform = -currentIndex * 100 + '%';
+            track.style.transform = `translateX(${newTransform})`;
+            thumbs.forEach((thumb, idx) => {
+                if (idx === currentIndex) thumb.classList.add('active');
+                else thumb.classList.remove('active');
+            });
+        }
+
+        function goTo(index) {
+            if (isAnimating) return;
+            if (index < 0) index = slides.length - 1;
+            if (index >= slides.length) index = 0;
+            if (index === currentIndex) return;
+            currentIndex = index;
+            updateSlider();
+        }
+
+        if (prevBtn) prevBtn.addEventListener('click', () => goTo(currentIndex - 1));
+        if (nextBtn) nextBtn.addEventListener('click', () => goTo(currentIndex + 1));
+        thumbs.forEach((thumb, idx) => thumb.addEventListener('click', () => goTo(idx)));
+
+        track.addEventListener('transitionstart', () => { isAnimating = true; });
+        track.addEventListener('transitionend', () => { isAnimating = false; });
+        updateSlider();
+    })();
+</script>
+</body>
+</html>

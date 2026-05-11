@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import (
     HeroBlock, GovernorBlock, AboutBlock, ContactInfo, Phone,
-    TeamMember, Goal, FAQ, Project, Event, Video, News, SiteContent
+    TeamMember, Goal, FAQ, Project, Event, Video, News, SiteContent, NewsImage
 )
 
 # ============================================
@@ -165,17 +165,6 @@ class VideoAdmin(admin.ModelAdmin):
     search_fields = ['title', 'subtitle']
     fields = ['title', 'subtitle', 'video_url']
 
-
-@admin.register(News)
-class NewsAdmin(admin.ModelAdmin):
-    """Новости (с отдельной страницей)"""
-    prepopulated_fields = {'slug': ('title',)}  # Автогенерация slug из заголовка
-    list_display = ['title', 'date', 'slug', 'id']
-    list_filter = ['date']
-    search_fields = ['title', 'subtitle', 'content']
-    fields = ['title', 'subtitle', 'image', 'date', 'content', 'slug']
-    date_hierarchy = 'date'
-
     
 @admin.register(SiteContent)
 class SiteContentAdmin(admin.ModelAdmin):
@@ -190,3 +179,19 @@ class SiteContentAdmin(admin.ModelAdmin):
         ('FAQ', {'fields': ('faq_title',)}),
         ('Контакты', {'fields': ('contacts_title',)}),
     )
+
+class NewsImageInline(admin.TabularInline):
+    model = NewsImage
+    extra = 1
+    fields = ['image', 'title', 'order']
+    ordering = ['order']
+
+@admin.register(News)
+class NewsAdmin(admin.ModelAdmin):
+    list_display = ['title', 'date', 'slug', 'id']
+    list_filter = ['date']
+    search_fields = ['title', 'subtitle', 'content']
+    prepopulated_fields = {'slug': ('title',)}
+    fields = ['title', 'subtitle', 'image', 'date', 'content', 'slug']
+    date_hierarchy = 'date'
+    inlines = [NewsImageInline]  # 👈 добавляем inline для изображений

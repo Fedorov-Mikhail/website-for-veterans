@@ -5,7 +5,7 @@
 <div id="top">
     <!-- Hero блок -->
     {% if hero %}
-    <section class="hero" style="background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.62), rgba(0, 0, 0, 0.62)), url('{{ hero.background_image.url }}');">
+    <section class="hero" id="documents" style="background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.62), rgba(0, 0, 0, 0.62)), url('{{ hero.background_image.url }}');">
         <div class="hero-overlay"></div>
         <div class="container hero-content">
             <h1>{{ hero.title }}</h1>
@@ -135,7 +135,7 @@
 
     <!-- Анонс мероприятий (карусель) -->
     {% if events %}
-    <section class="surface-white section-block" id="documents">
+    <section class="surface-white section-block" id="events">
         <div class="container">
             <div class="section-title">
                 <span></span>

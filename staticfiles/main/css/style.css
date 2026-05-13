@@ -59,19 +59,26 @@ a {
 }
 
 .brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.65rem;
-  max-width: 370px;
-  line-height: 1.1;
-  font-weight: 700;
-  font-size: 16px;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    max-width: 370px;
+    line-height: 1.1;
+    font-weight: 700;
+    font-size: 16px;
+    text-decoration: none;
+    color: #1e2a5a; /* или белый, если хедер тёмный */
 }
 
+.brand-logo {
+    width: 80px;      /* нужный размер */
+    height: auto;
+    display: block;
+}
+
+/* Удалите или закомментируйте старый .brand-mark, если он больше не нужен */
 .brand-mark {
-  width: 78px;
-  height: 57px;
-  background: url("/static/images/logo-mark-v2.svg") center/cover no-repeat;
+    display: none;
 }
 
 .nav-list {
@@ -192,6 +199,7 @@ a {
 }
 .section-subtitle {
   margin: 0 0 1.6rem;
+  margin-top: 20px;
   max-width: 980px;
   line-height: 1.35;
 }
@@ -609,9 +617,7 @@ body :where(h1, h2, h3, h4, h5, h6) {
   .video-card h3 {
     font-size: 20px !important;
   }
-  .brand {
-    font-size: 14px;
-  }
+
   .nav-item-link,
   .max-link {
     font-size: 16px;
@@ -784,4 +790,49 @@ body :where(h1, h2, h3, h4, h5, h6) {
         grid-template-columns: 1fr;
         gap: 1.5rem;
     }
+}
+
+/* Обёртка изображения новости для позиционирования бейджа */
+.news-image-wrapper {
+    position: relative;
+    overflow: hidden;
+    border-radius: 10px 10px 0 0; /* чтобы бейдж не вылезал за скруглённые углы */
+}
+
+/* Бейдж с датой */
+.news-date-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: rgba(0, 0, 0, 0.65);
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    backdrop-filter: blur(2px);
+    z-index: 2;
+    font-family: inherit;
+    letter-spacing: 0.3px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+/* Адаптив для мобильных */
+@media (max-width: 768px) {
+    .news-date-badge {
+        top: 8px;
+        left: 8px;
+        padding: 4px 10px;
+        font-size: 12px;
+    }
+}
+
+/* Целевым секциям добавляем отступ сверху при прокрутке к якорю */
+#intro, #news, #documents, #max-community {
+    scroll-margin-top: 100px; /* высота вашего хедера + запас */
+}
+
+/* Для универсальности можно всем секциям */
+section {
+    scroll-margin-top: 100px;
 }

@@ -328,3 +328,29 @@ class NewsImage(models.Model):
 
     def __str__(self):
         return f'Изображение для {self.news.title} - {self.order}'
+
+
+class IssueReport(models.Model):
+    """Сообщение пользователя о некорректных данных на сайте"""
+    PROBLEM_TYPES = (
+        ('fact', 'Фактическая ошибка'),
+        ('typo', 'Опечатка'),
+        ('other', 'Другое'),
+    )
+
+    problem_type = models.CharField('Тип проблемы', max_length=20, choices=PROBLEM_TYPES)
+    message = models.TextField('Что некорректно')
+    contact = models.CharField('Контакт для уточнений', max_length=200, blank=True)
+    consent = models.BooleanField('Согласие на обработку персональных данных', default=False)
+    page_url = models.URLField('Страница отправки', max_length=500, blank=True)
+    user_agent = models.CharField('Браузер', max_length=300, blank=True)
+    created_at = models.DateTimeField('Дата отправки', auto_now_add=True)
+    is_processed = models.BooleanField('Обработано', default=False)
+
+    class Meta:
+        verbose_name = 'Сообщение о некорректности'
+        verbose_name_plural = 'Сообщения о некорректности'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f'{self.get_problem_type_display()} от {self.created_at:%d.%m.%Y %H:%M}'

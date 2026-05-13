@@ -196,6 +196,7 @@ a {
 }
 .section-title h2 {
   margin: 0;
+  font-size: 100px;
 }
 .section-subtitle {
   margin: 0 0 1.6rem;
@@ -516,6 +517,23 @@ a {
 }
 .form-status {
   margin: 0;
+}
+.form-messages {
+  display: grid;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+.form-status {
+  border-radius: 8px;
+  padding: 0.8rem 1rem;
+}
+.form-status.success {
+  background: #e7f6ed;
+  color: #135d31;
+}
+.form-status.error {
+  background: #fff1ec;
+  color: #8a2b0c;
 }
 .honeypot {
   position: absolute;

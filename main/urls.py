@@ -7,6 +7,7 @@ app_name = 'main'
 urlpatterns = [
     # Главная страница
     path('', views.home, name='home'),
+    path('report-issue/', views.submit_issue_report, name='submit_issue_report'),
     
     # Детальная страница новости (по slug)
     path('news/<slug:slug>/', views.news_detail, name='news_detail'),

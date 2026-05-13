@@ -44,21 +44,6 @@
         </div>
     </footer>
 
-    <!-- Базовый JS для FAQ -->
-    <script>
-        document.querySelectorAll('.faq-item').forEach(item => {
-            const questionDiv = item.querySelector('.faq-question');
-            const toggleBtn = item.querySelector('.faq-toggle');
-            
-            const toggle = () => {
-                item.classList.toggle('open');
-                const isOpen = item.classList.contains('open');
-                toggleBtn.textContent = isOpen ? '−' : '+';
-                toggleBtn.setAttribute('aria-label', isOpen ? 'Скрыть ответ' : 'Раскрыть ответ');
-            };
-            
-            questionDiv.addEventListener('click', toggle);
-        }); 
-    </script>
+    <script src="{% static 'main/js/main.js' %}" defer></script>
 </body>
 </html>

@@ -1,8 +1,7 @@
 from django.contrib import admin
 from .models import (
     HeroBlock, GovernorBlock, AboutBlock, ContactInfo, Phone,
-    TeamMember, Goal, FAQ, Project, Event, Video, News, SiteContent, NewsImage,
-    IssueReport
+    TeamMember, Goal, FAQ, Project, Event, Video, News, SiteContent, NewsImage
 )
 
 # ============================================
@@ -197,17 +196,3 @@ class NewsAdmin(admin.ModelAdmin):
     date_hierarchy = 'date'
     inlines = [NewsImageInline]  # 👈 добавляем inline для изображений
 
-
-@admin.register(IssueReport)
-class IssueReportAdmin(admin.ModelAdmin):
-    list_display = ['created_at', 'problem_type', 'contact', 'is_processed']
-    list_filter = ['problem_type', 'is_processed', 'created_at']
-    search_fields = ['message', 'contact', 'page_url', 'user_agent']
-    readonly_fields = ['problem_type', 'message', 'contact', 'consent', 'page_url', 'user_agent', 'created_at']
-    fields = [
-        'is_processed', 'problem_type', 'message', 'contact',
-        'consent', 'page_url', 'user_agent', 'created_at'
-    ]
-
-    def has_add_permission(self, request):
-        return False

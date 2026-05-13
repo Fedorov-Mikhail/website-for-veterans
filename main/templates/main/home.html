@@ -11,11 +11,38 @@
             <h1>{{ hero.title }}</h1>
             <p>{{ hero.subtitle|default:"" }}</p>
             <div class="hero-actions">
-                <a href="{{ hero.button1_link }}" class="btn btn-accent">{{ hero.button1_text }}</a>
+                <button type="button" class="btn btn-accent" data-join-modal-open>{{ hero.button1_text }}</button>
                 <a href="{{ hero.button2_link }}" class="btn btn-light">{{ hero.button2_text }}</a>
             </div>
         </div>
     </section>
+    <div class="join-modal" data-join-modal hidden>
+        <div class="join-modal-backdrop" data-join-modal-close></div>
+        <div class="join-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="joinModalTitle">
+            <button type="button" class="join-modal-close" aria-label="Закрыть" data-join-modal-close>×</button>
+            <h2 id="joinModalTitle">Инструкция по вступлению в Ассоциацию</h2>
+
+            <div class="join-steps">
+                <p><strong>Шаг 1. Уточните ваше отделение</strong><br>Позвоните нам, чтобы узнать адрес местного отделения для подачи документов по вашему месту регистрации.</p>
+                <p><strong>Шаг 2. Подготовьте документы</strong><br>Скачайте и заполните необходимые формы по кнопкам ниже.</p>
+                <p><strong>Шаг 3. Подайте документы</strong><br>Принесите заполненные документы в местное отделение.</p>
+            </div>
+
+            <div class="join-contacts">
+                <strong>Контакты для связи:</strong>
+                <p>Телефон:<br><a href="tel:89876543210">89876543210</a></p>
+            </div>
+
+            <div class="join-documents">
+                <a href="https://drive.google.com/file/d/1PTRWtAJxRtrZ4YBWaPd9u7D2U2dDSu_6/view" target="_blank" rel="noopener">
+                    Шаблон согласия на обработку перс. данных
+                </a>
+                <a href="https://drive.google.com/file/d/1IUXB-4HYMLobU6udBpz_sS8ICnLBhahM/view" target="_blank" rel="noopener">
+                    Шаблон заявления и анкеты для вступления
+                </a>
+            </div>
+        </div>
+    </div>
     {% endif %}
 
     <!-- Блок губернатора (если включён) -->
@@ -323,7 +350,9 @@
                     <div class="qr-placeholder">QR</div>
                 </div>
             </div>
-            <div id="map" class="map-box" data-coords="{{ contacts.map_coordinates }}" data-zoom="{{ contacts.map_zoom }}"></div>
+            <div class="map-frame">
+                <div id="map" class="map-box" data-coords="{{ contacts.map_coordinates }}" data-zoom="{{ contacts.map_zoom }}"></div>
+            </div>
         </div>
     </section>
     {% endif %}

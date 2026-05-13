@@ -1,5 +1,11 @@
 # your_app/views.py
+import hashlib
+from smtplib import SMTPException
+
+from django.conf import settings
 from django.contrib import messages
+from django.core.cache import cache
+from django.core.mail import BadHeaderError, send_mail
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse
 from django.views.decorators.http import require_POST
@@ -49,21 +55,70 @@ def video_list(request):
     return render(request, 'main/video_list.html', {'videos': videos})
 
 
+def get_client_ip(request):
+    forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR', '')
+    if forwarded_for:
+        return forwarded_for.split(',')[0].strip()
+    return request.META.get('REMOTE_ADDR', '')
+
+
+def is_issue_report_rate_limited(request):
+    limit = max(1, settings.ISSUE_REPORT_RATE_LIMIT)
+    window = max(1, settings.ISSUE_REPORT_RATE_LIMIT_WINDOW)
+    client_ip = get_client_ip(request) or 'unknown'
+    ip_hash = hashlib.sha256(client_ip.encode('utf-8')).hexdigest()
+    cache_key = f'issue-report-rate:{ip_hash}'
+
+    if cache.add(cache_key, 1, timeout=window):
+        return False
+
+    try:
+        attempts = cache.incr(cache_key)
+    except ValueError:
+        cache.set(cache_key, 1, timeout=window)
+        return False
+
+    return attempts > limit
+
+
 @require_POST
 def submit_issue_report(request):
-    """Сохраняет сообщение о некорректных данных из формы на главной"""
+    """Отправляет сообщение о некорректных данных администратору на почту"""
     redirect_url = f'{reverse("main:home")}#feedback'
 
     if request.POST.get('website'):
         return redirect(redirect_url)
 
+    if is_issue_report_rate_limited(request):
+        messages.error(request, 'Слишком много отправок. Попробуйте позже.')
+        return redirect(redirect_url)
+
     form = IssueReportForm(request.POST)
     if form.is_valid():
-        report = form.save(commit=False)
-        report.page_url = request.META.get('HTTP_REFERER', '')[:500]
-        report.user_agent = request.META.get('HTTP_USER_AGENT', '')[:300]
-        report.save()
-        messages.success(request, 'Спасибо, сообщение отправлено администратору.')
+        problem_type = dict(IssueReportForm.PROBLEM_TYPES)[form.cleaned_data['problem_type']]
+        page_url = request.META.get('HTTP_REFERER', '')
+        user_agent = request.META.get('HTTP_USER_AGENT', '')
+        contact = form.cleaned_data['contact'] or 'Не указан'
+        body = (
+            'На сайте отправлено сообщение о некорректных данных.\n\n'
+            f'Тип проблемы: {problem_type}\n'
+            f'Описание: {form.cleaned_data["message"]}\n'
+            f'Контакт для уточнений: {contact}\n'
+            f'Страница отправки: {page_url}\n'
+            f'Браузер: {user_agent}\n'
+        )
+
+        try:
+            send_mail(
+                subject='Сообщение о некорректности данных на сайте',
+                message=body,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[settings.ISSUE_REPORT_RECIPIENT],
+                fail_silently=False,
+            )
+            messages.success(request, 'Спасибо, сообщение отправлено администратору.')
+        except (BadHeaderError, SMTPException, OSError):
+            messages.error(request, 'Не удалось отправить сообщение. Попробуйте позже.')
     else:
         messages.error(request, 'Проверьте форму: описание должно быть подробным, а согласие отмечено.')
 

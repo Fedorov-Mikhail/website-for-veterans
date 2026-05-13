@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   initFaq();
   initCarousels();
+  initJoinModal();
   initReportForm();
   initYandexMap();
 });
@@ -123,18 +124,72 @@ function initReportForm() {
   }
 }
 
+function initJoinModal() {
+  const modal = document.querySelector('[data-join-modal]');
+  const openButtons = document.querySelectorAll('[data-join-modal-open]');
+  if (!modal || openButtons.length === 0) return;
+
+  const closeButtons = modal.querySelectorAll('[data-join-modal-close]');
+  const dialog = modal.querySelector('.join-modal-dialog');
+  let lastFocusedElement = null;
+
+  function openModal() {
+    lastFocusedElement = document.activeElement;
+    modal.hidden = false;
+    document.body.classList.add('modal-open');
+    const closeButton = modal.querySelector('.join-modal-close');
+    closeButton?.focus();
+  }
+
+  function closeModal() {
+    modal.hidden = true;
+    document.body.classList.remove('modal-open');
+    lastFocusedElement?.focus?.();
+  }
+
+  openButtons.forEach((button) => {
+    button.addEventListener('click', openModal);
+  });
+
+  closeButtons.forEach((button) => {
+    button.addEventListener('click', closeModal);
+  });
+
+  dialog?.addEventListener('click', (event) => {
+    event.stopPropagation();
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && !modal.hidden) {
+      closeModal();
+    }
+  });
+}
+
 function initYandexMap() {
   const mapDiv = document.getElementById('map');
   if (!mapDiv || !mapDiv.dataset.coords || typeof ymaps === 'undefined') return;
 
   const coords = mapDiv.dataset.coords.split(',').map(Number);
   if (coords.length !== 2 || coords.some(Number.isNaN)) return;
+  const zoom = parseInt(mapDiv.dataset.zoom, 10) || 12;
 
   ymaps.ready(() => {
     const map = new ymaps.Map('map', {
       center: coords,
-      zoom: parseInt(mapDiv.dataset.zoom, 10) || 12,
+      zoom,
+      controls: ['geolocationControl', 'trafficControl', 'zoomControl', 'fullscreenControl'],
+    }, {
+      suppressMapOpenBlock: true,
+      yandexMapDisablePoiInteractivity: true,
     });
-    map.geoObjects.add(new ymaps.Placemark(coords));
+    map.geoObjects.add(new ymaps.Placemark(coords, {}, {
+      preset: 'islands#blueDotIcon',
+    }));
+
+    map.controls.get('zoomControl')?.options.set('position', { right: 10, top: 140 });
+    map.controls.get('geolocationControl')?.options.set('position', { right: 10, bottom: 92 });
+    map.controls.get('fullscreenControl')?.options.set('position', { right: 10, top: 10 });
+    map.controls.get('trafficControl')?.options.set('position', { right: 58, top: 10 });
   });
 }

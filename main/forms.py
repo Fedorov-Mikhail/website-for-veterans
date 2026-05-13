@@ -1,12 +1,17 @@
 from django import forms
 
-from .models import IssueReport
 
+class IssueReportForm(forms.Form):
+    PROBLEM_TYPES = (
+        ('fact', 'Фактическая ошибка'),
+        ('typo', 'Опечатка'),
+        ('other', 'Другое'),
+    )
 
-class IssueReportForm(forms.ModelForm):
-    class Meta:
-        model = IssueReport
-        fields = ['problem_type', 'message', 'contact', 'consent']
+    problem_type = forms.ChoiceField(choices=PROBLEM_TYPES)
+    message = forms.CharField(min_length=20)
+    contact = forms.CharField(max_length=200, required=False)
+    consent = forms.BooleanField()
 
     def clean_message(self):
         message = self.cleaned_data['message'].strip()

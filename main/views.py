@@ -29,15 +29,6 @@ def home(request):
     }
     return render(request, 'main/home.html', context)
 
-def news_list(request):
-    """Список всех новостей"""
-    news = News.objects.all()
-    context = {
-        'news': news,
-        'contacts': ContactInfo.objects.first(),
-    }
-    return render(request, 'main/news_list.html', context)
-
 def news_detail(request, slug):
     """Детальная страница новости"""
     news_item = get_object_or_404(News, slug=slug)

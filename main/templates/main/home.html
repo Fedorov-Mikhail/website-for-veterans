@@ -83,10 +83,12 @@
             </div>
             <div class="goals-grid">
                 {% for goal in goals %}
+                {% if goal.icon %}
                 <article class="goal-card">
                     <div class="goal-photo" style="background-image: url('{{ goal.icon.url }}');"></div>
                     <div class="goal-caption">{{ goal.title }}</div>
                 </article>
+                {% endif %}
                 {% endfor %}
             </div>
         </div>

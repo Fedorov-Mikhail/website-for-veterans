@@ -8,8 +8,8 @@
   --muted: #4a4f57;
   --line: #f27a1a;
   --accent: #f47a1a;
-  --img-gerb: url("/static/images/gerb-rf.jpg");  /* путь к дефолтному изображению */
-  --img-hero: url("/static/images/hero-bg.jpg");
+  --img-gerb: url("../images/logo-2.jpg");
+  --img-hero: url("../images/logo-1.jpg");
 }
 
 * {
